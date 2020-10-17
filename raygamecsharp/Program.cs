@@ -26,10 +26,11 @@ using static Raylib_cs.Raylib;  // core methods (InitWindow, BeginDrawing())
 using static Raylib_cs.Color;   // color (RAYWHITE, MAROON, etc.)
 using static Raylib_cs.Raymath; // mathematics utilities and operations (Vector2Add, etc.)
 using MathClasses;
-//using System.Numerics;          // mathematics types (Vector2, Vector3, etc.)
+using System.Numerics;          // mathematics types (Vector2, Vector3, etc.)
 using System.Collections.Generic;
 using Raylib_cs;
 using System;
+using Vector3 = MathClasses.Vector3;
 
 namespace M4GVisualTest
 {
@@ -47,24 +48,16 @@ namespace M4GVisualTest
             SetTargetFPS(60);
             LoadTextures();
 
-            objects.Add(new Sprite(textures["MainShipPart"], new List<Sprite> { 
-                new Sprite(textures["MainShipPart"],
-                new List<Sprite> {
-                    new Sprite(textures["MainShipPart"]) 
-                }) 
+            objects.Add(new Player(textures["MainShipPart"],new Vector2(800,450), new List<Sprite> { 
+                new Sprite(textures["MainShipPart"],new Vector3(100,0,90))
+                
             }));
-
-            objects[0].transform.m7 = 100;
-            objects[0].transform.m8 = 100;
-            objects[0].children[0].transform.m7 = 100;
-            objects[0].children[0].children[0].transform.m8 = 100;
 
             // Main game loop
             while (!WindowShouldClose())    // Detect window close button or ESC key
             {
                 
                 Update();
-                objects[0].transform.SetRotateZ(0.1f);
                 
                 Draw();
                 
