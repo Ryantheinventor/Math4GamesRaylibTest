@@ -48,17 +48,21 @@ namespace M4GVisualTest
             SetTargetFPS(60);
             LoadTextures();
 
-            objects.Add(new Player(textures["MainShipPart"],new Vector2(800,450), new List<Sprite> { 
-                new Sprite(textures["MainShipPart"],new Vector3(100,0,90))
-                
-            }));
 
+            #region Objects
+
+            objects.Add(new Player(textures["MainShipPart"], new Vector2(800, 450), new List<Sprite> {
+                new Sprite(textures["ShipWing1"],new Vector3(20,0,0)){flipTexture = false, Scale = 0.5f, physicsEnabled = true},
+                new Sprite(textures["ShipWing1"],new Vector3(-20,0,0)){flipTexture = true, Scale = 0.5f, physicsEnabled = true},
+
+            }));
+            #endregion
             // Main game loop
             while (!WindowShouldClose())    // Detect window close button or ESC key
             {
                 
                 Update();
-                
+                Physics();
                 Draw();
                 
             }
@@ -75,6 +79,17 @@ namespace M4GVisualTest
             }
         }
 
+        public static void Physics() 
+        {
+            foreach (Sprite g in objects) 
+            {
+                
+                if (g.physicsEnabled) 
+                {
+                    g.Translate(g.collider.velocity * GetFrameTime());
+                }
+            }
+        }
 
         public static void Draw() 
         {
@@ -94,7 +109,8 @@ namespace M4GVisualTest
 
         public static void LoadTextures() 
         {
-            textures.Add("MainShipPart",LoadTexture("Textures/Parts/spaceParts_037.png"));
+            textures.Add("MainShipPart", LoadTexture("Textures/Parts/spaceParts_037.png"));
+            textures.Add("ShipWing1", LoadTexture("Textures/Parts/spaceParts_007.png"));
         }
 
 

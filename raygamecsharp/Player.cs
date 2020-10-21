@@ -4,7 +4,6 @@ using System.Text;
 using Raylib_cs;
 using static Raylib_cs.Raylib;  // core methods (InitWindow, BeginDrawing())
 using static Raylib_cs.Color;   // color (RAYWHITE, MAROON, etc.)
-using static Raylib_cs.Raymath; // mathematics utilities and operations (Vector2Add, etc.)
 using MathClasses;
 using System.Numerics;
 using Vector3 = MathClasses.Vector3;

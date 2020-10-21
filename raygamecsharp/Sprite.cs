@@ -4,7 +4,6 @@ using System.Text;
 using Raylib_cs;
 using static Raylib_cs.Raylib;  // core methods (InitWindow, BeginDrawing())
 using static Raylib_cs.Color;   // color (RAYWHITE, MAROON, etc.)
-using static Raylib_cs.Raymath; // mathematics utilities and operations (Vector2Add, etc.)
 using MathClasses;
 using System.Numerics;
 using Vector3 = MathClasses.Vector3;
@@ -17,6 +16,9 @@ namespace M4GVisualTest
         public Matrix3 transform = new Matrix3();
         public List<Sprite> children = new List<Sprite>();
         public Sprite parent = null;
+        public Collider collider;
+        public bool flipTexture;
+        public bool physicsEnabled = true;
 
         public Matrix3 WorldTransform 
         {
@@ -33,22 +35,43 @@ namespace M4GVisualTest
             }
         }
 
-        public float Rotation 
+
+        public float Rotation
         {
-            get => (((float) Math.Atan2(WorldTransform.m1, WorldTransform.m4)) * 180/(float) Math.PI) - 90; //this line right here was a mess
-            set 
+            //wtf is happening
+            get => (((float)Math.Atan2(WorldTransform.m1, WorldTransform.m4)) * 180 / (float)Math.PI) - 90;
+            //(float)Math.Acos(0.5 * (WorldTransform.m1 + WorldTransform.m5 + WorldTransform.m9 - 1));
+            //((float)Math.Atan2(WorldTransform.m1, WorldTransform.m4))
+            set
             {
-                
+
                 transform.SetRotateZ((value - Rotation) * (float)Math.PI / 180);
             }
 
         }
+
+        public float Scale
+        {
+            get => (float)Math.Sqrt(transform.m1 * transform.m1 + transform.m4 * transform.m4); //this line right here was a mess
+            set
+            {
+                transform.m1 *= value / Scale;
+                transform.m2 *= value / Scale;
+                transform.m4 *= value / Scale;
+                transform.m5 *= value / Scale;
+            }
+
+        }
+
+
+
 
         public Sprite(Texture2D texture, Vector2 pos)
         {
             this.texture = texture;
             transform.m7 = pos.X;
             transform.m8 = pos.Y;
+            this.collider = new Collider(this);
         }
 
         public Sprite(Texture2D texture, Vector2 pos, List<Sprite> children)
@@ -61,6 +84,7 @@ namespace M4GVisualTest
             {
                 c.parent = this;
             }
+            this.collider = new Collider(this);
         }
 
 
@@ -70,6 +94,7 @@ namespace M4GVisualTest
             transform.m7 = posAndRot.x;
             transform.m8 = posAndRot.y;
             Rotation = posAndRot.z;
+            this.collider = new Collider(this);
         }
 
         public Sprite(Texture2D texture, MathClasses.Vector3 posAndRot, List<Sprite> children)
@@ -83,6 +108,7 @@ namespace M4GVisualTest
             {
                 c.parent = this;
             }
+            this.collider = new Collider(this);
         }
 
 
@@ -118,11 +144,25 @@ namespace M4GVisualTest
             //((float)Math.Atan2(worldMatrix.m1, worldMatrix.m4))
 
             Rectangle destRec = new Rectangle(posX, posY, width, height);
-            DrawTextureNPatch(texture, patch, destRec, new Vector2(width/2, height/2), Rotation, WHITE);
+
+            Texture2D drawTexture = texture;
+
+            if (flipTexture) 
+            {
+                Image tempImage = GetTextureData(texture);
+                ImageFlipHorizontal(ref tempImage);
+                drawTexture = LoadTextureFromImage(tempImage);
+            }
+            DrawTextureNPatch(drawTexture, patch, destRec, new Vector2(width / 2, height / 2), Rotation, WHITE);
+            if (physicsEnabled)
+            {
+                collider.DrawAABBCollider();
+            }
             foreach (Sprite child in children)
             {
                 child.Draw();
             }
+
         }
 
         public void Translate(Vector3 translation) 
