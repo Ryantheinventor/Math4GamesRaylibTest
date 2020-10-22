@@ -34,11 +34,13 @@ using Vector3 = MathClasses.Vector3;
 
 namespace M4GVisualTest
 {
-    public class core_window
+    public class Game
     {
 
         public static Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
         public static List<Sprite> objects = new List<Sprite>();
+        public static List<Sprite> queue = new List<Sprite>();
+        public static List<Sprite> marked = new List<Sprite>();
 
         public static int Main()
         { 
@@ -52,23 +54,45 @@ namespace M4GVisualTest
             #region Objects
 
             objects.Add(new Player(textures["MainShipPart"], new Vector2(800, 450), new List<Sprite> {
-                new Sprite(textures["ShipWing1"],new Vector3(20,0,0)){flipTexture = false, Scale = 0.5f, physicsEnabled = true},
-                new Sprite(textures["ShipWing1"],new Vector3(-20,0,0)){flipTexture = true, Scale = 0.5f, physicsEnabled = true},
-
-            }));
+                new Sprite(textures["ShipThruster"],new Vector3(10,40,0)){flipTexture = false, Scale = 0.2f, physicsEnabled = false},
+                new Sprite(textures["ShipThruster"],new Vector3(-10,40,0)){flipTexture = false, Scale = 0.2f, physicsEnabled = false},
+                new Sprite(textures["ShipThruster"],new Vector3(0,40,0)){flipTexture = false, Scale = 0.4f, physicsEnabled = false},
+                new Sprite(textures["ShipWing1"],new Vector3(15,-11,0)){flipTexture = false, Scale = 1f, physicsEnabled = false},
+                new Sprite(textures["ShipWing1"],new Vector3(-15,-11,0)){flipTexture = true, Scale = 1f, physicsEnabled = false},
+                new Sprite(textures["MainShipPart"],new Vector3(0,0,0)){flipTexture = false, Scale = 1f, physicsEnabled = false},
+                new Sprite(textures["ShipWindow"],new Vector3(0,0,0)){flipTexture = false, Scale = 0.5f, physicsEnabled = false, color = BLUE},
+                new Sprite(textures["ShipWing3"],new Vector3(30,18,-40)){flipTexture = true, Scale = 0.8f, physicsEnabled = false},
+                new Sprite(textures["ShipWing3"],new Vector3(-30,18,40)){flipTexture = false, Scale = 0.8f, physicsEnabled = false},
+                new Sprite(textures["ShipWing2"],new Vector3(17,18,22)){flipTexture = false, Scale = 0.5f, physicsEnabled = false},
+                new Sprite(textures["ShipWing2"],new Vector3(-17,18,-22)){flipTexture = true, Scale = 0.5f, physicsEnabled = false},
+                new Sprite(textures["ShipWing1"],new Vector3(18,-14,-13)){flipTexture = false, Scale = 0.5f, physicsEnabled = false},
+                new Sprite(textures["ShipWing1"],new Vector3(-18,-14,13)){flipTexture = true, Scale = 0.5f, physicsEnabled = false},
+            })
+            { Scale = 0.5f });//0.5f
+            //objects.Add(new Player(textures["MainShipPart"], new Vector2(800, 450)));
             #endregion
+
+
+            Start();
             // Main game loop
             while (!WindowShouldClose())    // Detect window close button or ESC key
             {
-                
                 Update();
                 Physics();
                 Draw();
-                
+                WrapUpFrame();
             }
 
             CloseWindow();        // Close window and OpenGL context
             return 0;
+        }
+
+        public static void Start()
+        {
+            foreach (Sprite sprite in objects)
+            {
+                sprite.Start();
+            }
         }
 
         public static void Update() 
@@ -83,10 +107,10 @@ namespace M4GVisualTest
         {
             foreach (Sprite g in objects) 
             {
-                
                 if (g.physicsEnabled) 
                 {
                     g.Translate(g.collider.velocity * GetFrameTime());
+                    //collision checks
                 }
             }
         }
@@ -107,13 +131,38 @@ namespace M4GVisualTest
             EndDrawing();
         }
 
+        public static void WrapUpFrame() 
+        {
+            foreach (Sprite s in queue) 
+            {
+                objects.Add(s);
+            }
+            queue = new List<Sprite>();
+
+            foreach (Sprite s in marked) 
+            {
+                objects.Remove(s);
+            }
+            marked = new List<Sprite>();
+
+        }
+
         public static void LoadTextures() 
         {
             textures.Add("MainShipPart", LoadTexture("Textures/Parts/spaceParts_037.png"));
             textures.Add("ShipWing1", LoadTexture("Textures/Parts/spaceParts_007.png"));
+            textures.Add("ShipWing2", LoadTexture("Textures/Parts/spaceParts_005.png"));
+            textures.Add("ShipWing3", LoadTexture("Textures/Parts/spaceParts_004.png"));
+            textures.Add("ShipWindow", LoadTexture("Textures/Parts/spaceParts_040.png"));
+            textures.Add("ShipThruster", LoadTexture("Textures/Parts/spaceParts_046.png"));
+            textures.Add("Missile", LoadTexture("Textures/Missiles/spaceMissiles_003.png"));
         }
 
-
+        public static void NewObject(Sprite sprite) 
+        {
+            queue.Add(sprite);
+            sprite.Start();
+        }
 
     }
 }

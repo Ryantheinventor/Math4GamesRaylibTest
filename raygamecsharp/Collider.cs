@@ -13,7 +13,7 @@ namespace M4GVisualTest
     public class Collider
     {
         public Sprite parentSprite;
-        public Vector3 velocity = new Vector3(0,10,0);
+        public Vector3 velocity = new Vector3(0,0,0);
 
 
         public Collider(Sprite parentSprite) 

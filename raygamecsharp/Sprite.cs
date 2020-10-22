@@ -19,6 +19,8 @@ namespace M4GVisualTest
         public Collider collider;
         public bool flipTexture;
         public bool physicsEnabled = true;
+        public string objectName = "";
+        public Color color = WHITE;
 
         public Matrix3 WorldTransform 
         {
@@ -34,7 +36,6 @@ namespace M4GVisualTest
                 }
             }
         }
-
 
         public float Rotation
         {
@@ -52,29 +53,26 @@ namespace M4GVisualTest
 
         public float Scale
         {
-            get => (float)Math.Sqrt(transform.m1 * transform.m1 + transform.m4 * transform.m4); //this line right here was a mess
+            get => (float)Math.Sqrt(transform.m1 * transform.m1 + transform.m2 * transform.m2);
             set
             {
-                transform.m1 *= value / Scale;
-                transform.m2 *= value / Scale;
-                transform.m4 *= value / Scale;
-                transform.m5 *= value / Scale;
+                float scaleVal = value / Scale;
+                Matrix3 scaleBy = new Matrix3(scaleVal, 0, 0, 0, scaleVal, 0, 0, 0, 1);
+                transform *= scaleBy;
             }
 
         }
 
-
-
-
-        public Sprite(Texture2D texture, Vector2 pos)
+        public Sprite(Texture2D texture, Vector2 pos, string name = "New Sprite")
         {
             this.texture = texture;
             transform.m7 = pos.X;
             transform.m8 = pos.Y;
             this.collider = new Collider(this);
+            objectName = name;
         }
 
-        public Sprite(Texture2D texture, Vector2 pos, List<Sprite> children)
+        public Sprite(Texture2D texture, Vector2 pos, List<Sprite> children, string name = "New Sprite")
         {
             this.texture = texture;
             this.children = children;
@@ -85,19 +83,21 @@ namespace M4GVisualTest
                 c.parent = this;
             }
             this.collider = new Collider(this);
+            objectName = name;
         }
 
 
-        public Sprite(Texture2D texture, MathClasses.Vector3 posAndRot)
+        public Sprite(Texture2D texture, Vector3 posAndRot, string name = "New Sprite")
         {
             this.texture = texture;
             transform.m7 = posAndRot.x;
             transform.m8 = posAndRot.y;
             Rotation = posAndRot.z;
             this.collider = new Collider(this);
+            objectName = name;
         }
 
-        public Sprite(Texture2D texture, MathClasses.Vector3 posAndRot, List<Sprite> children)
+        public Sprite(Texture2D texture, Vector3 posAndRot, List<Sprite> children, string name = "New Sprite")
         {
             this.texture = texture;
             this.children = children;
@@ -109,8 +109,8 @@ namespace M4GVisualTest
                 c.parent = this;
             }
             this.collider = new Collider(this);
+            objectName = name;
         }
-
 
         public virtual void Start()
         {
@@ -132,7 +132,15 @@ namespace M4GVisualTest
 
         public void Draw()
         {
-            Rectangle sourceRec = new Rectangle(0, 0, texture.width, texture.height);
+            Rectangle sourceRec = new Rectangle();
+            if (flipTexture)
+            {
+                sourceRec = new Rectangle(0, 0, -texture.width, texture.height);
+            }
+            else 
+            {
+                sourceRec = new Rectangle(0, 0, texture.width, texture.height);
+            }
             NPatchInfo patch = new NPatchInfo();
             patch.sourceRec = sourceRec;
 
@@ -140,23 +148,13 @@ namespace M4GVisualTest
             float height = (float)Math.Sqrt(WorldTransform.m4 * WorldTransform.m4 + WorldTransform.m5 * WorldTransform.m5) * texture.height;
             float posX = WorldTransform.m7;
             float posY = WorldTransform.m8;
-            //(float)Math.Acos(0.5 * (worldMatrix.m1 + worldMatrix.m5 + worldMatrix.m9 - 1));
-            //((float)Math.Atan2(worldMatrix.m1, worldMatrix.m4))
-
             Rectangle destRec = new Rectangle(posX, posY, width, height);
 
-            Texture2D drawTexture = texture;
+            DrawTextureNPatch(texture, patch, destRec, new Vector2(width / 2, height / 2), Rotation, color);
 
-            if (flipTexture) 
-            {
-                Image tempImage = GetTextureData(texture);
-                ImageFlipHorizontal(ref tempImage);
-                drawTexture = LoadTextureFromImage(tempImage);
-            }
-            DrawTextureNPatch(drawTexture, patch, destRec, new Vector2(width / 2, height / 2), Rotation, WHITE);
             if (physicsEnabled)
             {
-                collider.DrawAABBCollider();
+                //collider.DrawAABBCollider();
             }
             foreach (Sprite child in children)
             {
@@ -170,11 +168,6 @@ namespace M4GVisualTest
             transform.m7 += translation.x;
             transform.m8 += translation.y;
         }
-
-
-
-
-
     }
 
 
@@ -182,10 +175,10 @@ namespace M4GVisualTest
     class BaseLayout : Sprite
     {
 
-        public Player(Texture2D texture, Vector2 pos) : base(texture, pos) { }
-        public Player(Texture2D texture, Vector2 pos, List<Sprite> children) : base(texture, pos, children) { }
-        public Player(Texture2D texture, Vector3 posAndRot) : base(texture, posAndRot) { }
-        public Player(Texture2D texture, Vector3 posAndRot, List<Sprite> children) : base(texture, posAndRot, children) { }
+        public BaseLayout(Texture2D texture, Vector2 pos, string name = "New Sprite") : base(texture, pos, name) { }
+        public BaseLayout(Texture2D texture, Vector2 pos, List<Sprite> children, string name = "New Sprite") : base(texture, pos, children, name) { }
+        public BaseLayout(Texture2D texture, Vector3 posAndRot, string name = "New Sprite") : base(texture, posAndRot, name) { }
+        public BaseLayout(Texture2D texture, Vector3 posAndRot, List<Sprite> children, string name = "New Sprite") : base(texture, posAndRot, children, name) { }
 
         public override void Start()
         {
