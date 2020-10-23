@@ -20,10 +20,10 @@ namespace M4GVisualTest
         public float shotTimer = 0.3f;
         private float curTime = 0;
 
-        public Player(Texture2D texture, Vector2 pos) : base(texture, pos) { }
-        public Player(Texture2D texture, Vector2 pos, List<Sprite> children) : base(texture, pos, children) { }
-        public Player(Texture2D texture, Vector3 posAndRot) : base(texture, posAndRot) { }
-        public Player(Texture2D texture, Vector3 posAndRot, List<Sprite> children) : base(texture, posAndRot, children) { }
+        public Player(Texture2D texture, Vector2 pos, string name = "New Sprite") : base(texture, pos, name) { }
+        public Player(Texture2D texture, Vector2 pos, List<Sprite> children, string name = "New Sprite") : base(texture, pos, children, name) { }
+        public Player(Texture2D texture, Vector3 posAndRot, string name = "New Sprite") : base(texture, posAndRot, name) { }
+        public Player(Texture2D texture, Vector3 posAndRot, List<Sprite> children, string name = "New Sprite") : base(texture, posAndRot, children, name) { }
 
         public override void Start()
         {
@@ -61,9 +61,29 @@ namespace M4GVisualTest
             {
                 Missile m = new Missile(textures["Missile"], new Vector3(transform.m7, transform.m8, Rotation), "Misslie") { Scale = 0.3f };
                 NewObject(m);
+                m.Translate(new Vector3(transform.m2, -transform.m5, 0) * 50);
                 m.collider.velocity = new Vector3(transform.m2, -transform.m5, 0) * 1000;
                 curTime = shotTimer;
             }
+
+            if (transform.m7 > 1650)
+            {
+                transform.m7 = -30;
+            }
+            if (transform.m7 < -50)
+            {
+                transform.m7 = 1630;
+            }
+            if (transform.m8 > 950)
+            {
+                transform.m8 = -30;
+            }
+            if (transform.m8 < -50)
+            {
+                transform.m8 = 930;
+            }
+
+
         }
     }
 }

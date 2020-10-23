@@ -7,6 +7,7 @@ using static Raylib_cs.Color;   // color (RAYWHITE, MAROON, etc.)
 using MathClasses;
 using System.Numerics;
 using Vector3 = MathClasses.Vector3;
+using static M4GVisualTest.Game;
 
 namespace M4GVisualTest
 {
