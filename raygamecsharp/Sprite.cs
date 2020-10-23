@@ -21,7 +21,7 @@ namespace M4GVisualTest
         public bool physicsEnabled = true;
         public string objectName = "";
         public Color color = WHITE;
-
+        public bool visable = true;
         public Matrix3 WorldTransform 
         {
             get 
@@ -45,7 +45,6 @@ namespace M4GVisualTest
             //((float)Math.Atan2(WorldTransform.m1, WorldTransform.m4))
             set
             {
-
                 transform.SetRotateZ((value - Rotation) * (float)Math.PI / 180);
             }
 
@@ -60,7 +59,6 @@ namespace M4GVisualTest
                 Matrix3 scaleBy = new Matrix3(scaleVal, 0, 0, 0, scaleVal, 0, 0, 0, 1);
                 transform *= scaleBy;
             }
-
         }
 
         public Sprite(Texture2D texture, Vector2 pos, string name = "New Sprite")
@@ -132,35 +130,37 @@ namespace M4GVisualTest
 
         public void Draw()
         {
-            Rectangle sourceRec = new Rectangle();
-            if (flipTexture)
+            if (visable)
             {
-                sourceRec = new Rectangle(0, 0, -texture.width, texture.height);
-            }
-            else 
-            {
-                sourceRec = new Rectangle(0, 0, texture.width, texture.height);
-            }
-            NPatchInfo patch = new NPatchInfo();
-            patch.sourceRec = sourceRec;
+                Rectangle sourceRec = new Rectangle();
+                if (flipTexture)
+                {
+                    sourceRec = new Rectangle(0, 0, -texture.width, texture.height);
+                }
+                else
+                {
+                    sourceRec = new Rectangle(0, 0, texture.width, texture.height);
+                }
+                NPatchInfo patch = new NPatchInfo();
+                patch.sourceRec = sourceRec;
 
-            float width = (float)Math.Sqrt(WorldTransform.m1 * WorldTransform.m1 + WorldTransform.m2 * WorldTransform.m2) * texture.width;
-            float height = (float)Math.Sqrt(WorldTransform.m4 * WorldTransform.m4 + WorldTransform.m5 * WorldTransform.m5) * texture.height;
-            float posX = WorldTransform.m7;
-            float posY = WorldTransform.m8;
-            Rectangle destRec = new Rectangle(posX, posY, width, height);
+                float width = (float)Math.Sqrt(WorldTransform.m1 * WorldTransform.m1 + WorldTransform.m2 * WorldTransform.m2) * texture.width;
+                float height = (float)Math.Sqrt(WorldTransform.m4 * WorldTransform.m4 + WorldTransform.m5 * WorldTransform.m5) * texture.height;
+                float posX = WorldTransform.m7;
+                float posY = WorldTransform.m8;
+                Rectangle destRec = new Rectangle(posX, posY, width, height);
 
-            DrawTextureNPatch(texture, patch, destRec, new Vector2(width / 2, height / 2), Rotation, color);
-
-            if (physicsEnabled)
-            {
-                //collider.DrawAABBCollider();
+                DrawTextureNPatch(texture, patch, destRec, new Vector2(width / 2, height / 2), Rotation, color);
             }
             foreach (Sprite child in children)
             {
                 child.Draw();
             }
-
+            if (physicsEnabled)
+            {
+                collider.DrawOBBCollider();
+                //collider.DrawAABBCollider();
+            }
         }
 
         public void Translate(Vector3 translation) 
@@ -168,6 +168,14 @@ namespace M4GVisualTest
             transform.m7 += translation.x;
             transform.m8 += translation.y;
         }
+
+        public virtual void OnCollision(Sprite other) 
+        { 
+            
+        }
+
+
+
     }
 
 

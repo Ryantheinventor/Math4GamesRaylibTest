@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Raylib_cs;
 using System;
 using Vector3 = MathClasses.Vector3;
+using System.Diagnostics;
 
 namespace M4GVisualTest
 {
@@ -41,6 +42,9 @@ namespace M4GVisualTest
         public static List<Sprite> objects = new List<Sprite>();
         public static List<Sprite> queue = new List<Sprite>();
         public static List<Sprite> marked = new List<Sprite>();
+
+        public static int CollisionChecksPerFrame;
+        public static long CollisionCheckTime;
 
         public static int Main()
         { 
@@ -54,6 +58,9 @@ namespace M4GVisualTest
             #region Objects
 
             objects.Add(new Player(textures["MainShipPart"], new Vector2(800, 450), new List<Sprite> {
+                new Sprite(textures["Thrust"],new Vector3(0,63,180), "Thrust") {flipTexture = false, Scale = 0.7f, physicsEnabled = false, visable = false},
+                new Sprite(textures["Thrust"],new Vector3(-10,50,180), "ThrustD") {flipTexture = false, Scale = 0.3f, physicsEnabled = false, visable = false},
+                new Sprite(textures["Thrust"],new Vector3(10,50,180), "ThrustA") {flipTexture = false, Scale = 0.3f, physicsEnabled = false, visable = false},
                 new Sprite(textures["ShipThruster"],new Vector3(10,40,0)) {flipTexture = false, Scale = 0.2f, physicsEnabled = false},
                 new Sprite(textures["ShipThruster"],new Vector3(-10,40,0)) {flipTexture = false, Scale = 0.2f, physicsEnabled = false},
                 new Sprite(textures["ShipThruster"],new Vector3(0,40,0)) {flipTexture = false, Scale = 0.4f, physicsEnabled = false},
@@ -67,8 +74,13 @@ namespace M4GVisualTest
                 new Sprite(textures["ShipWing2"],new Vector3(-17,18,-22)) {flipTexture = true, Scale = 0.5f, physicsEnabled = false},
                 new Sprite(textures["ShipWing1"],new Vector3(18,-14,-13)) {flipTexture = false, Scale = 0.5f, physicsEnabled = false},
                 new Sprite(textures["ShipWing1"],new Vector3(-18,-14,13)) {flipTexture = true, Scale = 0.5f, physicsEnabled = false},
+                
             }, "Player")
             { Scale = 0.5f });//0.5f
+            objects.Add(new AsteroidSpawner(textures["MainShipPart"], new Vector2(-1000, -1000), "ASpawner") { physicsEnabled = false });
+
+
+
             //objects.Add(new Player(textures["MainShipPart"], new Vector2(800, 450)));
             #endregion
 
@@ -80,6 +92,7 @@ namespace M4GVisualTest
                 Update();
                 Physics();
                 Draw();
+                CollisionChecksPerFrame = 0;
                 WrapUpFrame();
             }
 
@@ -101,6 +114,10 @@ namespace M4GVisualTest
             {
                 sprite.Update();
             }
+            foreach (Sprite sprite in objects)
+            {
+                sprite.collider.UpdatePoints();
+            }
         }
 
         public static void Physics() 
@@ -110,9 +127,29 @@ namespace M4GVisualTest
                 if (g.physicsEnabled) 
                 {
                     g.Translate(g.collider.velocity * GetFrameTime());
-                    //collision checks
                 }
             }
+            Stopwatch sw = Stopwatch.StartNew();
+            for (int i = 0; i < objects.Count - 1; i++)
+            {
+                if (objects[i].physicsEnabled) 
+                {
+                    for (int j = i + 1; j < objects.Count; j++) 
+                    {
+                        if (objects[j].physicsEnabled) 
+                        {
+                            if (objects[i].collider.CheckCollision(objects[j].collider)) 
+                            {
+                                //Console.WriteLine(objects[i].objectName + ":" + objects[j].objectName);
+                                objects[i].OnCollision(objects[j]);
+                                objects[j].OnCollision(objects[i]);
+                            }
+                        }
+                    }
+                }
+            }
+            CollisionCheckTime = sw.ElapsedMilliseconds;
+            sw.Stop();
         }
 
         public static void Draw() 
@@ -125,8 +162,6 @@ namespace M4GVisualTest
                 sprite.Draw();
             }
 
-
-            
 
             EndDrawing();
         }
@@ -156,7 +191,7 @@ namespace M4GVisualTest
             textures.Add("ShipWindow", LoadTexture("Textures/Parts/spaceParts_040.png"));
             textures.Add("ShipThruster", LoadTexture("Textures/Parts/spaceParts_046.png"));
             textures.Add("Missile", LoadTexture("Textures/Missiles/spaceMissiles_003.png"));
-
+            textures.Add("Thrust", LoadTexture("Textures/Effects/spaceEffects_002.png"));
             textures.Add("Asteroid1", LoadTexture("Textures/Meteors/spaceMeteors_001.png"));
             textures.Add("Asteroid2", LoadTexture("Textures/Meteors/spaceMeteors_002.png"));
             textures.Add("Asteroid3", LoadTexture("Textures/Meteors/spaceMeteors_003.png"));
@@ -167,6 +202,11 @@ namespace M4GVisualTest
         {
             queue.Add(sprite);
             sprite.Start();
+        }
+
+        public static void Destroy(Sprite sprite) 
+        {
+            marked.Add(sprite);
         }
 
     }

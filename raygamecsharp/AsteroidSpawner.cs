@@ -13,13 +13,13 @@ namespace M4GVisualTest
 {
     class AsteroidSpawner : Sprite {
 
-        public int asteroidSizeModifier = 1;
-        public int maxAsteroids = 35;
+        public float asteroidSizeModifier = 0.1f;
+        public int maxAsteroids = 35;//35
         public int asteroidVariants = 1;//the largest number on asteroid textures (must be one for all sizes)
         public int minAsteroidSpeed = 100;
         public int maxAsteroidSpeed = 200;
         Random random = new Random();
-        float spawnWaitTime = 5f;//5
+        float spawnWaitTime = 3f;//3
         float curWaitTime = 0f;
         Player player;
 
@@ -41,6 +41,7 @@ namespace M4GVisualTest
 
         public override void Update()
         {
+            curWaitTime += GetFrameTime();
             int asteroidCount = 0;
             foreach (Sprite s in objects) 
             {
@@ -58,17 +59,26 @@ namespace M4GVisualTest
                 {
                     spawnPos.X = random.Next(0, 1600);
                 }
-                //-----
+
+                //random rotation
+                int randomRot = random.Next(0, 360);
 
                 //random asteroid size
-                int size = random.Next(1, 4) * asteroidSizeModifier;
+                int size = random.Next(1, 4);
 
                 //random asteroid texture name
                 string asteroidTextureName = "Asteroid" + random.Next(1, 5);
 
                 //create asteroid
-                //Asteroid a = new Asteroid(textures[asteroidTextureName],)
-
+                Asteroid a = new Asteroid(textures[asteroidTextureName], new Vector3(spawnPos.X, spawnPos.Y, randomRot), "Asteroid") { Scale = size * asteroidSizeModifier};
+                a.size = size;
+                float speed = random.Next(minAsteroidSpeed, maxAsteroidSpeed);
+                float angleRad = (float)random.NextDouble() * 2;
+                a.collider.velocity.x = MathF.Cos(angleRad) * speed;
+                a.collider.velocity.y = MathF.Sin(angleRad) * speed;
+                a.spawner = this;
+                NewObject(a);
+                curWaitTime = 0;
             }
         }
     }

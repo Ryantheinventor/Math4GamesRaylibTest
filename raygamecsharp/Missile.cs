@@ -27,7 +27,22 @@ namespace M4GVisualTest
 
         public override void Update()
         {
-
+            if (transform.m7 > 1650)
+            {
+                Destroy(this);
+            }
+            if (transform.m7 < -50)
+            {
+                Destroy(this);
+            }
+            if (transform.m8 > 950)
+            {
+                Destroy(this);
+            }
+            if (transform.m8 < -50)
+            {
+                Destroy(this);
+            }
         }
     }
 }

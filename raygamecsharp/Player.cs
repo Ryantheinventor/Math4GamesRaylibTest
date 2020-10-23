@@ -36,21 +36,72 @@ namespace M4GVisualTest
             {
                 collider.velocity += new Vector3(transform.m2, -transform.m5, 0) * (acceleration * GetFrameTime());
                 float speed = MathF.Abs(MathF.Sqrt(MathF.Pow(collider.velocity.x, 2) + MathF.Pow(collider.velocity.y, 2)));
-                if (speed > maxSpeed) 
+                if (speed > maxSpeed)
                 {
                     float maxSpeedPercent = maxSpeed / speed;
                     collider.velocity.x *= maxSpeedPercent;
                     collider.velocity.y *= maxSpeedPercent;
                 }
-
+                foreach (Sprite s in children)
+                {
+                    if (s.objectName == "Thrust")
+                    {
+                        s.visable = true;
+                    }
+                }
+            }
+            else 
+            {
+                foreach (Sprite s in children)
+                {
+                    if (s.objectName == "Thrust")
+                    {
+                        s.visable = false;
+                    }
+                }
             }
             if (IsKeyDown(KeyboardKey.KEY_A))
             {
                 Rotation -= rotationSpeed * GetFrameTime();
+                foreach (Sprite s in children)
+                {
+                    if (s.objectName == "ThrustA")
+                    {
+                        s.visable = true;
+                    }
+                }
             }
+            else 
+            {
+                foreach (Sprite s in children)
+                {
+                    if (s.objectName == "ThrustA")
+                    {
+                        s.visable = false;
+                    }
+                }
+            }
+
             if (IsKeyDown(KeyboardKey.KEY_D))
             {
                 Rotation += rotationSpeed * GetFrameTime();
+                foreach (Sprite s in children)
+                {
+                    if (s.objectName == "ThrustD")
+                    {
+                        s.visable = true;
+                    }
+                }
+            }
+            else 
+            {
+                foreach (Sprite s in children)
+                {
+                    if (s.objectName == "ThrustD")
+                    {
+                        s.visable = false;
+                    }
+                }
             }
             if (curTime > 0) 
             {
@@ -59,7 +110,7 @@ namespace M4GVisualTest
 
             if (curTime <= 0 && IsKeyDown(KeyboardKey.KEY_SPACE)) 
             {
-                Missile m = new Missile(textures["Missile"], new Vector3(transform.m7, transform.m8, Rotation), "Misslie") { Scale = 0.3f };
+                Missile m = new Missile(textures["Missile"], new Vector3(transform.m7, transform.m8, Rotation), "Missile") { Scale = 0.3f };
                 NewObject(m);
                 m.Translate(new Vector3(transform.m2, -transform.m5, 0) * 50);
                 m.collider.velocity = new Vector3(transform.m2, -transform.m5, 0) * 1000;
