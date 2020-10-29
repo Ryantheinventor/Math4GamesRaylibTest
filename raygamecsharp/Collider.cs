@@ -1,4 +1,4 @@
-﻿#define ShowCollisionDebug
+﻿//#define ShowCollisionDebug
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,6 +29,9 @@ namespace M4GVisualTest
             this.parentSprite = parentSprite;
         }
 
+        /// <summary>
+        /// Update position of collider bounding box
+        /// </summary>
         public void UpdatePoints() 
         {
             boxTransform.Set(parentSprite.transform * new Matrix3(parentSprite.texture.width / 2, 0, 0, 0, parentSprite.texture.height / 2, 0, 0, 0, 1));
@@ -39,6 +42,9 @@ namespace M4GVisualTest
             center = new Vector2(boxTransform.m7, boxTransform.m8);
         }
 
+        /// <summary>
+        /// Draw AABB style bounding box (AABB colliders are not used)
+        /// </summary>
         public void DrawAABBCollider() 
         {
             float width = (float)Math.Sqrt(parentSprite.WorldTransform.m1 * parentSprite.WorldTransform.m1 + parentSprite.WorldTransform.m2 * parentSprite.WorldTransform.m2) * parentSprite.texture.width;
@@ -52,6 +58,9 @@ namespace M4GVisualTest
             DrawLine((int)(posX + width / 2), (int)(posY + height / 2), (int)(posX - width / 2), (int)(posY + height / 2), GREEN);
         }
 
+        /// <summary>
+        /// Draw OBB style bounding box
+        /// </summary>
         public void DrawOBBCollider()
         {
 #if ShowCollisionDebug
@@ -62,20 +71,25 @@ namespace M4GVisualTest
 #endif
         }
 
+        /// <summary>
+        /// check if "other" collider is intersecting with this collider
+        /// </summary>
         public bool CheckCollision(Collider other) 
         {
-            CollisionChecksPerFrame++;
+            collisionChecksPerFrame++;
             Vector3 center3 = new Vector3(center.X, center.Y, 0);
             Vector3 otherCenter3 = new Vector3(other.center.X, other.center.Y, 0);
+            //distance between both objects
             float dist = (float)Math.Sqrt((otherCenter3.x - center3.x) * (otherCenter3.x - center3.x) + (otherCenter3.y - center3.y) * (otherCenter3.y - center3.y));
+            //a maximum distance collisions need to be checked at
             float range = new Vector3(boxTransform.m1, boxTransform.m2, 0).Magnitude() + new Vector3(boxTransform.m4, boxTransform.m5, 0).Magnitude()
                 + new Vector3(other.boxTransform.m1, other.boxTransform.m2, 0).Magnitude() + new Vector3(other.boxTransform.m4, other.boxTransform.m5, 0).Magnitude();
             if (dist>range) 
             {
-                return false;
+                return false;//stop check we already know the two objects are too faar apart
             }
 
-
+           
             {//other in this
                 Vector3 xExtent = new Vector3(boxTransform.m1, boxTransform.m2, 0);
                 Vector3 yExtent = new Vector3(boxTransform.m4, boxTransform.m5, 0);
@@ -86,7 +100,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)center.X, (int)center.Y, (int)other.pointA.X, (int)other.pointA.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug
@@ -102,7 +116,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)center.X, (int)center.Y, (int)other.pointB.X, (int)other.pointB.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug
@@ -118,7 +132,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)center.X, (int)center.Y, (int)other.pointC.X, (int)other.pointC.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug
@@ -134,7 +148,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)center.X, (int)center.Y, (int)other.pointD.X, (int)other.pointD.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug
@@ -158,7 +172,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)other.center.X, (int)other.center.Y, (int)pointA.X, (int)pointA.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug
@@ -174,7 +188,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)other.center.X, (int)other.center.Y, (int)pointB.X, (int)pointB.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug
@@ -190,7 +204,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)other.center.X, (int)other.center.Y, (int)pointC.X, (int)pointC.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug
@@ -206,7 +220,7 @@ namespace M4GVisualTest
 #if ShowCollisionDebug
                     DrawLine((int)other.center.X, (int)other.center.Y, (int)pointD.X, (int)pointD.Y, RED);
 #endif
-                    CollisionChecksPerFrame++;
+                    collisionChecksPerFrame++;
                     if (!(Math.Sqrt(Math.Abs(v.Dot(xExtent))) > xExtent.Magnitude() || Math.Sqrt(Math.Abs(v.Dot(yExtent))) > yExtent.Magnitude()))
                     {
 #if ShowCollisionDebug

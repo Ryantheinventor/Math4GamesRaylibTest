@@ -153,6 +153,9 @@
     <None Update="Textures\Effects\spaceEffects_018.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Textures\Heart.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Textures\Meteors\spaceMeteors_001.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -709,6 +712,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Textures\Ships\spaceShips_009.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Textures\Square.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Textures\Station\spaceStation_001.png">

@@ -17,7 +17,7 @@ namespace M4GVisualTest
         public int size = 1;
         public AsteroidSpawner spawner;
         Random random = new Random();
-
+        public Player player;
         public Asteroid(Texture2D texture, Vector2 pos, string name = "New Sprite") : base(texture, pos, name) { }
         public Asteroid(Texture2D texture, Vector2 pos, List<Sprite> children, string name = "New Sprite") : base(texture, pos, children, name) { }
         public Asteroid(Texture2D texture, Vector3 posAndRot, string name = "New Sprite") : base(texture, posAndRot, name) { }
@@ -52,6 +52,7 @@ namespace M4GVisualTest
         { 
             if (other.objectName == "Missile") 
             {
+                player.score += 10 + 5 * (size - 1);
                 Destroy(other);
                 if (size != 1)
                 {
@@ -71,9 +72,29 @@ namespace M4GVisualTest
                         a.collider.velocity.x = MathF.Cos(angleRad) * speed;
                         a.collider.velocity.y = MathF.Sin(angleRad) * speed;
                         a.spawner = spawner;
+                        a.player = player;
                         NewObject(a);
                     }
                 }
+                if (random.Next(0, 1) == 0) 
+                {
+                    Sprite lp = new LifePickup(textures["Heart"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
+                        new ParticleSystem(textures["Square"], new Vector2(0, 0), "LifeParticles")
+                        { color = Fade(RED, 0.7f), lifeTime = 2, scale = new Vector2(5, 5), minVelocity = new Vector2(-10, -10), maxVelocity = new Vector2(10, -5) }
+                    }, "LifePickup")
+                    { Rotation = 0 };
+                    lp.collider.velocity = collider.velocity*0.1f;
+                    NewObject(lp);
+                }
+
+
+
+                Destroy(this);
+            }
+            if (other.objectName == "Player") 
+            {
+                ((Player)other).health--;
+                
                 Destroy(this);
             }
         }

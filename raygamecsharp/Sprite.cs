@@ -22,6 +22,10 @@ namespace M4GVisualTest
         public string objectName = "";
         public Color color = WHITE;
         public bool visable = true;
+
+        /// <summary>
+        /// Transform relative to world
+        /// </summary>
         public Matrix3 WorldTransform 
         {
             get 
@@ -37,6 +41,9 @@ namespace M4GVisualTest
             }
         }
 
+        /// <summary>
+        /// World rotation (no local rotation sorry)
+        /// </summary>
         public float Rotation
         {
 
@@ -49,6 +56,9 @@ namespace M4GVisualTest
 
         }
 
+        /// <summary>
+        /// Local scale 
+        /// </summary>
         public float Scale
         {
             get => (float)Math.Sqrt(transform.m1 * transform.m1 + transform.m2 * transform.m2);
@@ -83,7 +93,6 @@ namespace M4GVisualTest
             objectName = name;
         }
 
-
         public Sprite(Texture2D texture, Vector3 posAndRot, string name = "New Sprite")
         {
             this.texture = texture;
@@ -109,6 +118,9 @@ namespace M4GVisualTest
             objectName = name;
         }
 
+        /// <summary>
+        /// Start is run after object creation
+        /// </summary>
         public virtual void Start()
         {
 
@@ -118,6 +130,10 @@ namespace M4GVisualTest
             }
         }
 
+
+        /// <summary>
+        /// Update is run once per frame before physics are calculated
+        /// </summary>
         public virtual void Update() 
         {
 
@@ -127,7 +143,8 @@ namespace M4GVisualTest
             }
         }
 
-        public void Draw()
+
+        public virtual void Draw()
         {
             if (visable)
             {
@@ -161,6 +178,15 @@ namespace M4GVisualTest
                 //collider.DrawAABBCollider();
             }
         }
+
+        public virtual void UIDraw() 
+        {
+            foreach (Sprite child in children)
+            {
+                child.Update();
+            }
+        }
+
 
         public void Translate(Vector3 translation) 
         {

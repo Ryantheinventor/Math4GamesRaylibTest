@@ -22,11 +22,12 @@ namespace M4GVisualTest
 
         public override void Start()
         {
-
+            base.Start();
         }
 
         public override void Update()
         {
+            base.Update();
             if (transform.m7 > 1650)
             {
                 Destroy(this);

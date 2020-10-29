@@ -50,7 +50,7 @@ namespace M4GVisualTest
                     asteroidCount++;
                 }
             }
-            if (curWaitTime > spawnWaitTime && asteroidCount < maxAsteroids)
+            if (curWaitTime > spawnWaitTime && asteroidCount < maxAsteroids && !player.gameOver)
             {
 
                 //random spawn
@@ -77,6 +77,7 @@ namespace M4GVisualTest
                 a.collider.velocity.x = MathF.Cos(angleRad) * speed;
                 a.collider.velocity.y = MathF.Sin(angleRad) * speed;
                 a.spawner = this;
+                a.player = player;
                 NewObject(a);
                 curWaitTime = 0;
             }

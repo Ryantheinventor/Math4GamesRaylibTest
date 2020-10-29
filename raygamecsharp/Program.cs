@@ -43,8 +43,8 @@ namespace M4GVisualTest
         public static List<Sprite> queue = new List<Sprite>();
         public static List<Sprite> marked = new List<Sprite>();
 
-        public static int CollisionChecksPerFrame;
-        public static long CollisionCheckTime;
+        public static int collisionChecksPerFrame;
+        public static long collisionCheckTime;
 
         public static int Main()
         { 
@@ -75,9 +75,11 @@ namespace M4GVisualTest
                 new Sprite(textures["ShipWing1"],new Vector3(18,-14,-13)) {flipTexture = false, Scale = 0.5f, physicsEnabled = false},
                 new Sprite(textures["ShipWing1"],new Vector3(-18,-14,13)) {flipTexture = true, Scale = 0.5f, physicsEnabled = false},
                 
-            }, "Player")
-            { Scale = 0.5f });//0.5f
+            }, "Player") { Scale = 0.5f });//0.5f
+
             objects.Add(new AsteroidSpawner(textures["MainShipPart"], new Vector2(-1000, -1000), "ASpawner") { physicsEnabled = false });
+            objects.Add(new ParticleSystem(textures["Square"], new Vector2(500, 500), "PTest") 
+            { color = Fade(RED,0.7f), lifeTime = 2, scale = new Vector2(5,5),minVelocity = new Vector2(-10,-10) ,maxVelocity = new Vector2(10,-5) });
 
 
 
@@ -92,7 +94,7 @@ namespace M4GVisualTest
                 Update();
                 Physics();
                 Draw();
-                CollisionChecksPerFrame = 0;
+                collisionChecksPerFrame = 0;
                 WrapUpFrame();
             }
 
@@ -114,10 +116,7 @@ namespace M4GVisualTest
             {
                 sprite.Update();
             }
-            foreach (Sprite sprite in objects)
-            {
-                sprite.collider.UpdatePoints();
-            }
+            
         }
 
         public static void Physics() 
@@ -128,6 +127,10 @@ namespace M4GVisualTest
                 {
                     g.Translate(g.collider.velocity * GetFrameTime());
                 }
+            }
+            foreach (Sprite sprite in objects)
+            {
+                sprite.collider.UpdatePoints();
             }
             Stopwatch sw = Stopwatch.StartNew();
             for (int i = 0; i < objects.Count - 1; i++)
@@ -148,7 +151,7 @@ namespace M4GVisualTest
                     }
                 }
             }
-            CollisionCheckTime = sw.ElapsedMilliseconds;
+            collisionCheckTime = sw.ElapsedMilliseconds;
             sw.Stop();
         }
 
@@ -162,6 +165,10 @@ namespace M4GVisualTest
                 sprite.Draw();
             }
 
+            foreach (Sprite sprite in objects)
+            {
+                sprite.UIDraw();
+            }
 
             EndDrawing();
         }
@@ -196,6 +203,8 @@ namespace M4GVisualTest
             textures.Add("Asteroid2", LoadTexture("Textures/Meteors/spaceMeteors_002.png"));
             textures.Add("Asteroid3", LoadTexture("Textures/Meteors/spaceMeteors_003.png"));
             textures.Add("Asteroid4", LoadTexture("Textures/Meteors/spaceMeteors_004.png"));
+            textures.Add("Heart", LoadTexture("Textures/Heart.png"));
+            textures.Add("Square", LoadTexture("Textures/Square.png"));
         }
 
         public static void NewObject(Sprite sprite) 
