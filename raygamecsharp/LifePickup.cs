@@ -27,6 +27,7 @@ namespace M4GVisualTest
 
         public override void Update()
         {
+            //screen wrap
             if (transform.m7 > 1650)
             {
                 transform.m7 = -30;
@@ -49,7 +50,15 @@ namespace M4GVisualTest
         {
             if (other.objectName == "Player") 
             {
+                //give health to player
                 ((Player)other).health++;
+                //create pickup pop effect
+                Sprite pPop = new TimedObject(textures["Square"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
+                        new ParticleSystem(textures["Square"], new Vector2(0, 0), "AsteroidPopParticles")
+                        { color = Fade(RED, 0.7f), lifeTime = 1, scale = new Vector2(5, 5), minVelocity = new Vector2(-100, -100), maxVelocity = new Vector2(100, 100), particlePerEmit = 50, emitTime = 0, maxParticleCount = 50}
+                    }, "LifePickup")
+                { waitTime = 1 };
+                NewObject(pPop);
                 Destroy(this);
             }
         }

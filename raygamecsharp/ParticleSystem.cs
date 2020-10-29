@@ -16,11 +16,13 @@ namespace M4GVisualTest
     {
         private float curEmitTime = 0;
         public float emitTime = 0.1f;
+        public int particlePerEmit = 1;
         public float lifeTime = 10f;
         public int maxParticleCount = 100;
         public Vector2 minVelocity = new Vector2(-30, -30);
         public Vector2 maxVelocity = new Vector2(30, -15);
         public Vector2 scale = new Vector2(10, 10);
+        
         List<ParticleData> particles = new List<ParticleData>();
         List<ParticleData> deadParticles = new List<ParticleData>();
         Random random = new Random();
@@ -31,13 +33,7 @@ namespace M4GVisualTest
 
         public override void Draw()
         {
-            Console.WriteLine("-");
-            Console.WriteLine(curEmitTime);
-            Console.WriteLine(emitTime);
-            Console.WriteLine(WorldTransform.m7);
-            Console.WriteLine(particles.Count + "/" + maxParticleCount);
-
-
+            //remove old particles
             foreach (ParticleData p in particles)
             {
                 if (p.lifeTime > lifeTime) 
@@ -50,13 +46,21 @@ namespace M4GVisualTest
                 particles.Remove(p);
             }
             deadParticles = new List<ParticleData>();
+
+            //add new particles
             curEmitTime += GetFrameTime();
-            if (curEmitTime >= emitTime && particles.Count < maxParticleCount) 
+            int emited = 0;
+            while (curEmitTime >= emitTime && particles.Count < maxParticleCount && emited < particlePerEmit) 
             {
+                emited++;
                 particles.Add(new ParticleData(new Vector2(randomValue(minVelocity.X,maxVelocity.X), randomValue(minVelocity.Y, maxVelocity.Y)), new Vector2(WorldTransform.m7, WorldTransform.m8), scale));
-                curEmitTime = 0;
+                if (emited >= particlePerEmit) 
+                {
+                    curEmitTime = 0;
+                }
             }
 
+            //move particles
             foreach (ParticleData p in particles)
             {
                 p.lifeTime += GetFrameTime();
@@ -68,6 +72,12 @@ namespace M4GVisualTest
 
         }
 
+        /// <summary>
+        /// Get a random float in a range of two numbers
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
         private float randomValue(float start, float end) 
         {
             if (start < end)

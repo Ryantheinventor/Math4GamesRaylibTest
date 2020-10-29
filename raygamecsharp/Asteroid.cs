@@ -30,6 +30,7 @@ namespace M4GVisualTest
 
         public override void Update()
         {
+            //screen wrap
             if (transform.m7 > 1650)
             {
                 transform.m7 = -30;
@@ -76,18 +77,24 @@ namespace M4GVisualTest
                         NewObject(a);
                     }
                 }
-                if (random.Next(0, 1) == 0) 
+                if (random.Next(0, 15) == 0) 
                 {
-                    Sprite lp = new LifePickup(textures["Heart"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
+                    //create life pickup
+                    Sprite lifePickup = new LifePickup(textures["Heart"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
                         new ParticleSystem(textures["Square"], new Vector2(0, 0), "LifeParticles")
                         { color = Fade(RED, 0.7f), lifeTime = 2, scale = new Vector2(5, 5), minVelocity = new Vector2(-10, -10), maxVelocity = new Vector2(10, -5) }
                     }, "LifePickup")
                     { Rotation = 0 };
-                    lp.collider.velocity = collider.velocity*0.1f;
-                    NewObject(lp);
+                    lifePickup.collider.velocity = collider.velocity*0.1f;
+                    NewObject(lifePickup);
                 }
-
-
+                //create asteroid pop effect
+                Sprite aPop = new TimedObject(textures["Square"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
+                        new ParticleSystem(textures["Square"], new Vector2(0, 0), "AsteroidPopParticles")
+                        { color = Fade(BROWN, 0.7f), lifeTime = 1, scale = new Vector2(5, 5), minVelocity = new Vector2(-100, -100), maxVelocity = new Vector2(100, 100), particlePerEmit = 50, emitTime = 0}
+                    }, "LifePickup")
+                { waitTime = 1 };
+                NewObject(aPop);
 
                 Destroy(this);
             }

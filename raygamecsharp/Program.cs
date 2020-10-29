@@ -78,8 +78,8 @@ namespace M4GVisualTest
             }, "Player") { Scale = 0.5f });//0.5f
 
             objects.Add(new AsteroidSpawner(textures["MainShipPart"], new Vector2(-1000, -1000), "ASpawner") { physicsEnabled = false });
-            objects.Add(new ParticleSystem(textures["Square"], new Vector2(500, 500), "PTest") 
-            { color = Fade(RED,0.7f), lifeTime = 2, scale = new Vector2(5,5),minVelocity = new Vector2(-10,-10) ,maxVelocity = new Vector2(10,-5) });
+            //objects.Add(new ParticleSystem(textures["Square"], new Vector2(500, 500), "PTest") 
+            //{ color = Fade(RED,0.7f), lifeTime = 2, scale = new Vector2(5,5),minVelocity = new Vector2(-10,-10) ,maxVelocity = new Vector2(10,-5) });
 
 
 
