@@ -39,13 +39,12 @@ namespace M4GVisualTest
 
         public float Rotation
         {
-            //wtf is happening
-            get => (((float)Math.Atan2(WorldTransform.m1, WorldTransform.m4)) * 180 / (float)Math.PI) - 90;
-            //(float)Math.Acos(0.5 * (WorldTransform.m1 + WorldTransform.m5 + WorldTransform.m9 - 1));
-            //((float)Math.Atan2(WorldTransform.m1, WorldTransform.m4))
+
+            get => (((float)Math.Atan2(WorldTransform.m1, WorldTransform.m4)) * 180 / (float)Math.PI) + 90;//the line ive been trying to fix for the past hour
             set
             {
-                transform.SetRotateZ((value - Rotation) * (float)Math.PI / 180);
+                transform.SetRotateZ((Rotation - value) * (float)Math.PI / 180);//the fix
+                //transform.SetRotateZ((value - Rotation) * (float)Math.PI / 180);//old version
             }
 
         }
