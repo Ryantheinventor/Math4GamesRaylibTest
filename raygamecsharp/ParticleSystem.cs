@@ -97,6 +97,7 @@ namespace M4GVisualTest
 
     }
 
+    //stores all data for a single particle in a system
     public class ParticleData 
     {
         public Vector2 velocity;

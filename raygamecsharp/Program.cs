@@ -104,6 +104,7 @@ namespace M4GVisualTest
 
         public static void Start()
         {
+            //call all starts
             foreach (Sprite sprite in objects)
             {
                 sprite.Start();
@@ -112,6 +113,7 @@ namespace M4GVisualTest
 
         public static void Update() 
         {
+            //call all updates
             foreach (Sprite sprite in objects)
             {
                 sprite.Update();
@@ -121,6 +123,7 @@ namespace M4GVisualTest
 
         public static void Physics() 
         {
+            //apply velocity
             foreach (Sprite g in objects) 
             {
                 if (g.physicsEnabled) 
@@ -128,11 +131,13 @@ namespace M4GVisualTest
                     g.Translate(g.collider.velocity * GetFrameTime());
                 }
             }
+            //update collider posistion
             foreach (Sprite sprite in objects)
             {
                 sprite.collider.UpdatePoints();
             }
-            Stopwatch sw = Stopwatch.StartNew();
+
+            //check for intersections
             for (int i = 0; i < objects.Count - 1; i++)
             {
                 if (objects[i].physicsEnabled) 
@@ -151,8 +156,6 @@ namespace M4GVisualTest
                     }
                 }
             }
-            collisionCheckTime = sw.ElapsedMilliseconds;
-            sw.Stop();
         }
 
         public static void Draw() 
@@ -160,11 +163,13 @@ namespace M4GVisualTest
             BeginDrawing();
             ClearBackground(BLACK);
 
+            //call all draws
             foreach (Sprite sprite in objects) 
             {
                 sprite.Draw();
             }
 
+            //call all UIDraws (called after to have UI draw above the game)
             foreach (Sprite sprite in objects)
             {
                 sprite.UIDraw();
@@ -173,22 +178,27 @@ namespace M4GVisualTest
             EndDrawing();
         }
 
+        //clean up queued and marked objects
         public static void WrapUpFrame() 
         {
+            //add queued objects to main list
             foreach (Sprite s in queue) 
             {
                 objects.Add(s);
             }
-            queue = new List<Sprite>();
+            queue = new List<Sprite>();//reset queue
 
+            //remove marked obects from main list
             foreach (Sprite s in marked) 
             {
                 objects.Remove(s);
             }
-            marked = new List<Sprite>();
+            marked = new List<Sprite>();//reset marked
 
         }
 
+
+        //load all textures into memory
         public static void LoadTextures() 
         {
             textures.Add("MainShipPart", LoadTexture("Textures/Parts/spaceParts_037.png"));
@@ -207,12 +217,15 @@ namespace M4GVisualTest
             textures.Add("Square", LoadTexture("Textures/Square.png"));
         }
 
+
+        //new objects are added into queue
         public static void NewObject(Sprite sprite) 
         {
             queue.Add(sprite);
             sprite.Start();
         }
 
+        //old objects are added into marked
         public static void Destroy(Sprite sprite) 
         {
             marked.Add(sprite);

@@ -143,7 +143,9 @@ namespace M4GVisualTest
             }
         }
 
-
+        /// <summary>
+        /// Draw sprite onto screen
+        /// </summary>
         public virtual void Draw()
         {
             if (visable)

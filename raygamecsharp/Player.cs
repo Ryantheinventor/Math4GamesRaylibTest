@@ -40,9 +40,12 @@ namespace M4GVisualTest
                 base.Update();
                 if (IsKeyDown(KeyboardKey.KEY_W))
                 {
+                    //apply forward thrust
                     Vector3 direction = new Vector3(transform.m2, -transform.m5, 0);
                     direction.Normalize();
                     collider.velocity += direction * (acceleration * GetFrameTime());
+
+                    //keep velocity at a max
                     float speed = MathF.Abs(MathF.Sqrt(MathF.Pow(collider.velocity.x, 2) + MathF.Pow(collider.velocity.y, 2)));
                     if (speed > maxSpeed)
                     {
@@ -50,6 +53,8 @@ namespace M4GVisualTest
                         collider.velocity.x *= maxSpeedPercent;
                         collider.velocity.y *= maxSpeedPercent;
                     }
+
+                    //show flame comming out main thruster
                     foreach (Sprite s in children)
                     {
                         if (s.objectName == "Thrust")
@@ -60,6 +65,7 @@ namespace M4GVisualTest
                 }
                 else
                 {
+                    //hide flame comming out main thruster
                     foreach (Sprite s in children)
                     {
                         if (s.objectName == "Thrust")
@@ -68,9 +74,12 @@ namespace M4GVisualTest
                         }
                     }
                 }
+
+                //rotate ship
                 if (IsKeyDown(KeyboardKey.KEY_A))
                 {
                     Rotation -= rotationSpeed * GetFrameTime();
+                    //show flame comming out side thruster
                     foreach (Sprite s in children)
                     {
                         if (s.objectName == "ThrustA")
@@ -81,6 +90,7 @@ namespace M4GVisualTest
                 }
                 else
                 {
+                    //hide flame comming out side thruster
                     foreach (Sprite s in children)
                     {
                         if (s.objectName == "ThrustA")
@@ -89,10 +99,10 @@ namespace M4GVisualTest
                         }
                     }
                 }
-
                 if (IsKeyDown(KeyboardKey.KEY_D))
                 {
                     Rotation += rotationSpeed * GetFrameTime();
+                    //show flame comming out side thruster
                     foreach (Sprite s in children)
                     {
                         if (s.objectName == "ThrustD")
@@ -103,6 +113,7 @@ namespace M4GVisualTest
                 }
                 else
                 {
+                    //hide flame comming out side thruster
                     foreach (Sprite s in children)
                     {
                         if (s.objectName == "ThrustD")
@@ -112,11 +123,13 @@ namespace M4GVisualTest
                     }
                 }
 
+                //count down for fire rate
                 if (curTime > 0)
                 {
                     curTime -= GetFrameTime();
                 }
 
+                //fire new missile
                 if (curTime <= 0 && IsKeyDown(KeyboardKey.KEY_SPACE))
                 {
                     Missile m = new Missile(textures["Missile"], new Vector3(transform.m7, transform.m8, Rotation), new List<Sprite> {
@@ -137,6 +150,7 @@ namespace M4GVisualTest
                     curTime = shotTimer;
                 }
             }
+            //screen wrap
             if (transform.m7 > 1650)
             {
                 transform.m7 = -30;
@@ -154,25 +168,48 @@ namespace M4GVisualTest
                 transform.m8 = 930;
             }
 
+            //end the game
             if (health <= 0) 
             {
                 gameOver = true;
             }
-
+            
+            //reset game
+            if (gameOver && IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON)) 
+            {
+                foreach (Sprite s in objects) 
+                {
+                    if (s.objectName == "Asteroid" || s.objectName == "Missile" || s.objectName == "LifePickup") 
+                    {
+                        Destroy(s);
+                    }
+                }
+                health = 3;
+                gameOver = false;
+                score = 0;
+                Rotation = 180;
+                collider.velocity = new Vector3(0, 0, 0);
+                transform.m7 = 800;
+                transform.m8 = 450;
+            }
 
         }
 
         public override void UIDraw()
         {
+            //draw health
             Rectangle sourceRec = new Rectangle(0,0,textures["Heart"].width, textures["Heart"].height);
             for (int i = 0; i < health; i++) 
             {
                 Rectangle destRec = new Rectangle(10 + (30 * (i + 1)), 10, 20, 20);
                 DrawTexturePro(textures["Heart"],sourceRec,destRec,new Vector2(0,0),0,Fade(WHITE,0.7f));
             }
+
+            //draw score
             int x = 800 - MeasureText("Score:" + score, 20) / 2;
             DrawText("Score:" + score, x, 10, 20, WHITE);
 
+            //game over screen
             if (gameOver) 
             {
                 DrawText("Game Over!", 800 - MeasureText("Game Over!", 100) / 2, 400, 100, WHITE);

@@ -22,6 +22,7 @@ namespace M4GVisualTest
 
         public override void Update()
         {
+            //destroy self after time has passed
             waitTime -= GetFrameTime();
             if (waitTime <= 0) 
             {
@@ -29,6 +30,7 @@ namespace M4GVisualTest
             }
         }
 
+        //overridden to stop drawing any sprites for this object
         public override void Draw()
         {
             foreach (Sprite child in children)

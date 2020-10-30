@@ -28,6 +28,7 @@ namespace M4GVisualTest
         public override void Update()
         {
             base.Update();
+            //destroy self at edge of screen
             if (transform.m7 > 1650)
             {
                 Destroy(this);

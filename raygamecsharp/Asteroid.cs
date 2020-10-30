@@ -23,11 +23,6 @@ namespace M4GVisualTest
         public Asteroid(Texture2D texture, Vector3 posAndRot, string name = "New Sprite") : base(texture, posAndRot, name) { }
         public Asteroid(Texture2D texture, Vector3 posAndRot, List<Sprite> children, string name = "New Sprite") : base(texture, posAndRot, children, name) { }
 
-        public override void Start()
-        {
-
-        }
-
         public override void Update()
         {
             //screen wrap
@@ -68,8 +63,9 @@ namespace M4GVisualTest
                         //create asteroid
                         Asteroid a = new Asteroid(textures[asteroidTextureName], new Vector3(transform.m7, transform.m8, randomRot), "Asteroid") { Scale = (size - 1) * spawner.asteroidSizeModifier };
                         a.size = size - 1;
-                        float speed = random.Next(spawner.minAsteroidSpeed, spawner.maxAsteroidSpeed);
-                        float angleRad = (float)random.NextDouble() * 2;
+                        float speed = random.Next(spawner.minAsteroidSpeed, spawner.maxAsteroidSpeed);//random speed
+                        float angleRad = (float)random.NextDouble() * 2;//random angle
+                        //apply speed and angle to velocity of new asteroid
                         a.collider.velocity.x = MathF.Cos(angleRad) * speed;
                         a.collider.velocity.y = MathF.Sin(angleRad) * speed;
                         a.spawner = spawner;
@@ -92,16 +88,38 @@ namespace M4GVisualTest
                 Sprite aPop = new TimedObject(textures["Square"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
                         new ParticleSystem(textures["Square"], new Vector2(0, 0), "AsteroidPopParticles")
                         { color = Fade(BROWN, 0.7f), lifeTime = 1, scale = new Vector2(5, 5), minVelocity = new Vector2(-100, -100), maxVelocity = new Vector2(100, 100), particlePerEmit = 50, emitTime = 0}
-                    }, "LifePickup")
+                    }, "AsteroidPop")
                 { waitTime = 1 };
                 NewObject(aPop);
 
                 Destroy(this);
             }
+            //damage player
             if (other.objectName == "Player") 
             {
+                //create asteroid pop effect
                 ((Player)other).health--;
-                
+                Sprite aPop = new TimedObject(textures["Square"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
+                        new ParticleSystem(textures["Square"], new Vector2(0, 0), "AsteroidPopParticles")
+                        { color = Fade(BROWN, 0.7f), lifeTime = 1, scale = new Vector2(5, 5), minVelocity = new Vector2(-100, -100), maxVelocity = new Vector2(100, 100), particlePerEmit = 50, emitTime = 0}
+                    }, "AsteroidPop")
+                { waitTime = 1 };
+                NewObject(aPop);
+
+                //smaller RED and WHITE particle explosions for visualising the ship taking damage
+                Sprite playerDamagePop1 = new TimedObject(textures["Square"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
+                        new ParticleSystem(textures["Square"], new Vector2(0, 0), "PlayerDamagePopParticles")
+                        { color = Fade(RED, 0.4f), lifeTime = 1, scale = new Vector2(5, 5), minVelocity = new Vector2(-100, -100), maxVelocity = new Vector2(100, 100), particlePerEmit = 25, emitTime = 0, maxParticleCount = 25}
+                    }, "PlayerDamagePop")
+                { waitTime = 1 };
+                NewObject(playerDamagePop1);
+                Sprite playerDamagePop2 = new TimedObject(textures["Square"], new Vector2(transform.m7, transform.m8), new List<Sprite> {
+                        new ParticleSystem(textures["Square"], new Vector2(0, 0), "PlayerDamagePopParticles")
+                        { color = Fade(WHITE, 0.4f), lifeTime = 1, scale = new Vector2(5, 5), minVelocity = new Vector2(-100, -100), maxVelocity = new Vector2(100, 100), particlePerEmit = 25, emitTime = 0, maxParticleCount = 25}
+                    }, "PlayerDamagePop")
+                { waitTime = 1 };
+                NewObject(playerDamagePop2);
+
                 Destroy(this);
             }
         }

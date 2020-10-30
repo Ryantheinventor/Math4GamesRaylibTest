@@ -20,7 +20,7 @@ namespace M4GVisualTest
         public int maxAsteroidSpeed = 200;
         Random random = new Random();
         float spawnWaitTime = 3f;//3
-        float curWaitTime = 0f;
+        float curWaitTime = 2f;
         Player player;
 
         public AsteroidSpawner(Texture2D texture, Vector2 pos, string name = "New Sprite") : base(texture, pos, name) { }
@@ -41,8 +41,9 @@ namespace M4GVisualTest
 
         public override void Update()
         {
-            curWaitTime += GetFrameTime();
+            curWaitTime -= GetFrameTime();
             int asteroidCount = 0;
+            //count asteroids already out
             foreach (Sprite s in objects) 
             {
                 if (s.objectName == "Asteroid") 
@@ -50,7 +51,7 @@ namespace M4GVisualTest
                     asteroidCount++;
                 }
             }
-            if (curWaitTime > spawnWaitTime && asteroidCount < maxAsteroids && !player.gameOver)
+            if (curWaitTime <= 0 && asteroidCount < maxAsteroids && !player.gameOver)
             {
 
                 //random spawn
@@ -72,14 +73,15 @@ namespace M4GVisualTest
                 //create asteroid
                 Asteroid a = new Asteroid(textures[asteroidTextureName], new Vector3(spawnPos.X, spawnPos.Y, randomRot), "Asteroid") { Scale = size * asteroidSizeModifier};
                 a.size = size;
-                float speed = random.Next(minAsteroidSpeed, maxAsteroidSpeed);
-                float angleRad = (float)random.NextDouble() * 2;
+                float speed = random.Next(minAsteroidSpeed, maxAsteroidSpeed);//random speed
+                float angleRad = (float)random.NextDouble() * 2;//random angle
+                //apply speed and angle to velocity of new asteroid
                 a.collider.velocity.x = MathF.Cos(angleRad) * speed;
                 a.collider.velocity.y = MathF.Sin(angleRad) * speed;
                 a.spawner = this;
                 a.player = player;
                 NewObject(a);
-                curWaitTime = 0;
+                curWaitTime = spawnWaitTime;
             }
         }
     }
