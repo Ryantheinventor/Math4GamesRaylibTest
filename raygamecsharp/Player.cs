@@ -213,6 +213,7 @@ namespace M4GVisualTest
             if (gameOver) 
             {
                 DrawText("Game Over!", 800 - MeasureText("Game Over!", 100) / 2, 400, 100, WHITE);
+                DrawText("Left click to restart...", 800 - MeasureText("Left click to restart...", 30) / 2, 500, 30, WHITE);
             }
         }
 
